@@ -28,16 +28,19 @@ An AI-powered chatbot system using Retrieval-Augmented Generation (RAG) to provi
 ![](https://github.com/nassoreen/chatbot/blob/main/images/RAG.png)
 
 
+
 ## Installation
+
 
 1. Clone Repository
 
 ```sh
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/nassoreen/chatbot.git
 ```
 ```sh
-cd your-repo
+cd chatbot
 ```
+
 
 2. Create Virtual Environment
 
@@ -48,11 +51,13 @@ python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
 ```
 
+
 3. Install Dependencies
 
 ```sh
 pip install -r requirements.txt
 ```
+
 
 4. Setup Database
 
@@ -60,14 +65,24 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
+
 5. Run Ollama (LLM)
 
 ```sh
 ollama run llama3
 ```
 
+
 6. Run Server
    
 ```sh
 python manage.py runserver
 ```
+
+
+
+### Limitations
+
+- Requires a prepared knowledge base
+- Performance depends on data quality
+- LLM requires sufficient system resources
