@@ -21,6 +21,10 @@ An AI-powered chatbot system using Retrieval-Augmented Generation (RAG) to provi
 - Embedding: SentenceTransformers
 - Search: Vector Similarity Search
 
+### How It Works (RAG)
+![](https://github.com/nassoreen/chatbot/blob/main/images/RAG.png)
+
+
 ### DEMO
  ![](https://github.com/nassoreen/chatbot/blob/main/images/demo.png)
 
