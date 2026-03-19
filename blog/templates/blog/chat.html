@@ -1,0 +1,796 @@
+{% load static %}
+<style>
+  /* Floating Dino Button with glow effect */
+  #dinoBtn {
+    position: fixed;
+    right: 24px;
+    bottom: 18px;
+    width: 170px;
+    cursor: pointer;
+    z-index: 9999;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 8px 16px rgba(0, 56, 117, 0.3));
+  }
+  #dinoBtn:hover {
+    transform: scale(1.1) translateY(-4px);
+    filter: drop-shadow(0 12px 24px rgba(0, 56, 117, 0.4));
+  }
+  #dinoBtn:active {
+    transform: scale(1.05);
+  }
+  #dinoBtn img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Chat Widget with modern glassmorphism */
+  #chatWidget {
+    position: fixed;
+    right: 22px;
+    bottom: 18px;
+    width: 420px;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+    z-index: 10000;
+
+    display: none;
+    transform: translateY(60px) scale(0.9);
+    opacity: 0;
+    transition:
+      transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+      opacity 0.35s ease;
+  }
+  #chatWidget.show {
+    display: block;
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  /* Header with gradient and animation */
+  .chatbox-top {
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #003875 0%, #0b5aa6 50%, #1e88e5 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 8s ease infinite;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes gradientShift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .chatbox-top::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 70%
+    );
+    animation: ripple 4s linear infinite;
+  }
+
+  @keyframes ripple {
+    0% {
+      transform: scale(0.8) translate(-25%, -25%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5) translate(-25%, -25%);
+      opacity: 0;
+    }
+  }
+
+  .chatbox-top > div {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chatbox-top > div::before {
+    font-size: 20px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  .chatbox-top .close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .chatbox-top .close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+  }
+
+  /* Body with custom scrollbar */
+  .chatbox-body {
+    height: 420px;
+    overflow-y: auto;
+    padding: 16px;
+    background: linear-gradient(to bottom, #f8fafc 0%, #f1f5f9 100%);
+  }
+
+  .chatbox-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .chatbox-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chatbox-body::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #cbd5e1, #94a3b8);
+    border-radius: 10px;
+  }
+
+  .chatbox-body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #94a3b8, #64748b);
+  }
+
+  /* Message bubbles with animation */
+  .msg {
+    margin: 12px 0;
+    display: flex;
+    animation: messageSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes messageSlide {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .msg.user {
+    justify-content: flex-end;
+  }
+
+  .bubble {
+    max-width: 78%;
+    background: #fff;
+    border-radius: 18px;
+    padding: 12px 16px;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      0 1px 2px rgba(0, 0, 0, 0.06);
+    line-height: 1.6;
+    word-break: break-word;
+    position: relative;
+  }
+
+  .msg.bot .bubble {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-left: 3px solid #3b82f6;
+  }
+
+  .msg.user .bubble {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 1px solid #93c5fd;
+  }
+
+  /* Bot avatar */
+  .msg.bot {
+    align-items: flex-start;
+  }
+
+  .msg.bot .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .role-tag {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Date separator */
+  .date-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Input area with modern design */
+  .chatbox-compose {
+    display: flex;
+    gap: 8px; /* ลดช่องว่าง */
+    padding: 12px; /* ลด padding รอบๆ */
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .chatbox-compose textarea {
+    flex: 1;
+    resize: none;
+    padding: 8px 14px; /* 🔻 ลด padding ในกล่อง */
+    border-radius: 12px; /* 🔻 ลดความโค้ง */
+    border: 2px solid #e2e8f0;
+    outline: none;
+    min-height: 40px; /* 🔻 จาก 48 → 40 */
+    max-height: 96px; /* กันไม่ให้สูงเกิน */
+    font-size: 14px;
+    line-height: 1.4; /* ชิดขึ้น */
+    transition: all 0.25s ease;
+    background: #f8fafc;
+  }
+
+  .chatbox-compose textarea:focus {
+    border-color: #3b82f6;
+    background: #fff;
+    box-shadow:
+      0 0 0 3px rgba(59, 130, 246, 0.1),
+      0 2px 6px rgba(59, 130, 246, 0.12);
+  }
+
+  .send-btn {
+    width: 40px; /* 🔻 จาก 46 → 40 */
+    height: 40px;
+    border-radius: 10px;
+    background: #003875;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transform: translateY(8px);
+  }
+
+  .send-btn img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+  }
+
+  /* Quick reply icons with hover effects */
+  .quick-icons {
+    display: flex;
+    gap: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    border-top: 1px solid #e2e8f0;
+    background: linear-gradient(to bottom, #ffffff, #f8fafc);
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .quick-icons::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .quick-icons::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .quick-icons::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+
+  .quick-icons button {
+    flex: 0 0 auto;
+    width: 88px;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    text-align: center;
+    cursor: pointer;
+    padding: 10px 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+
+  .quick-icons img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
+  }
+
+  .quick-icons span {
+    font-size: 11px;
+    line-height: 1.3;
+    color: #334155;
+    font-weight: 600;
+    display: block;
+  }
+
+  .quick-icons button:hover {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-color: #3b82f6;
+  }
+
+  /* Loading animation */
+  #loadingRow .bubble::after {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #3b82f6;
+    animation: dotPulse 1.5s ease-in-out infinite;
+    margin-left: 4px;
+  }
+
+  @keyframes dotPulse {
+    0%,
+    80%,
+    100% {
+      opacity: 0;
+    }
+    40% {
+      opacity: 1;
+    }
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 480px) {
+    #chatWidget {
+      width: calc(100vw - 20px);
+      right: 10px;
+      bottom: 10px;
+      border-radius: 20px;
+    }
+
+    #dinoBtn {
+      width: 140px;
+      right: 10px;
+      bottom: 10px;
+    }
+
+    .chatbox-body {
+      height: 380px;
+    }
+
+    .bubble {
+      max-width: 85%;
+    }
+  }
+
+  /* Smooth entrance for empty state */
+  #emptyState {
+    animation: fadeInUp 0.6s ease;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<!-- ✅ Dino Button -->
+<div id="dinoBtn" title="เปิดแชท">
+  <img src="{% static 'images/masscost.png' %}" alt="Chat" />
+</div>
+
+<!-- ✅ Floating Chat Widget -->
+<div id="chatWidget">
+  <div class="chatbox-top">
+    <div>CMSA Chatbot</div>
+    <button
+      type="button"
+      class="close-btn"
+      id="closeChatBtn"
+      aria-label="close"
+    >
+      ×
+    </button>
+  </div>
+
+  <div class="chatbox-body" id="chatboxBody">
+    {% for m in history %} {% ifchanged m.created_at|date:"Y-m-d" %}
+    <div class="date-sep" data-datekey="{{ m.created_at|date:'Y-m-d' }}"></div>
+    {% endifchanged %}
+
+    <div class="msg {% if m.role == 'user' %}user{% else %}bot{% endif %}">
+      {% if m.role != 'user' %}
+      <img class="avatar" src="{% static 'images/bot.png' %}" alt="bot" />
+      {% endif %}
+      <div class="bubble">
+        <div class="role-tag">
+          {% if m.role == 'user' %}คุณ{% else %}เจ้าหน้าที่อัตโนมัติ{% endif %}
+          <span
+            class="time-tag"
+            data-time="{{ m.created_at|date:'H:i' }}"
+          ></span>
+        </div>
+        {{ m.text|linebreaksbr }}
+      </div>
+    </div>
+
+    {% empty %}
+    <div class="msg bot" id="emptyState">
+      <img class="avatar" src="{% static 'images/bot.png' %}" />
+      <div class="bubble">
+        <div class="role-tag">เจ้าหน้าที่อัตโนมัติ</div>
+        สวัสดีครับ
+        ยินดีให้ข้อมูลเกี่ยวกับบริการของศูนย์บริการตรวจสอบและรับรองมาตรฐาน
+        พิมพ์คำถามได้เลยครับ
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ✅ Quick Reply -->
+  <div class="quick-icons" id="quickReplies">
+    <button data-text="อัตราค่าบริการ">
+      <img src="{% static 'icons/price.svg' %}" />
+      <span>อัตรา<br />ค่าบริการ</span>
+    </button>
+
+    <button data-text="ขั้นตอนการส่งตัวอย่าง">
+      <img src="{% static 'icons/money.svg' %}" />
+      <span>ขั้นตอน<br />ส่งตัวอย่าง</span>
+    </button>
+
+    <button data-text="ระยะเวลาการตรวจ">
+      <img src="{% static 'icons/receipt.svg' %}" />
+      <span>ระยะเวลา<br />ตรวจ</span>
+    </button>
+
+    <button data-text="ติดต่อเจ้าหน้าที่">
+      <img src="{% static 'icons/tag.svg' %}" />
+      <span>ติดต่อ<br />เจ้าหน้าที่</span>
+    </button>
+  </div>
+
+  <form id="chatboxForm" class="chatbox-compose">
+    {% csrf_token %}
+    <textarea
+      id="chatboxMessage"
+      placeholder="พิมพ์คำถามของคุณ..."
+      required
+    ></textarea>
+    <button type="submit" class="send-btn" aria-label="ส่งข้อความ">
+      <img src="{% static 'icons/send.svg' %}" alt="ส่ง" />
+    </button>
+  </form>
+</div>
+
+<script>
+  // ===== csrftoken =====
+  function getCookie(name) {
+    let v = null;
+    document.cookie.split(";").forEach((c) => {
+      c = c.trim();
+      if (c.startsWith(name + "="))
+        v = decodeURIComponent(c.substring(name.length + 1));
+    });
+    return v;
+  }
+  const csrftoken = getCookie("csrftoken");
+
+  // ===== Elements =====
+  const dinoBtn = document.getElementById("dinoBtn");
+  const chatWidget = document.getElementById("chatWidget");
+  const closeChatBtn = document.getElementById("closeChatBtn");
+
+  const body = document.getElementById("chatboxBody");
+  const form = document.getElementById("chatboxForm");
+  const input = document.getElementById("chatboxMessage");
+
+  // ===== Open / Close =====
+  function openChat() {
+    dinoBtn.style.display = "none";
+    chatWidget.style.display = "block";
+    requestAnimationFrame(() => chatWidget.classList.add("show"));
+    setTimeout(() => {
+      body.scrollTop = body.scrollHeight;
+      input.focus();
+    }, 50);
+  }
+
+  function closeChat() {
+    chatWidget.classList.remove("show");
+    setTimeout(() => {
+      chatWidget.style.display = "none";
+      dinoBtn.style.display = "block";
+    }, 300);
+  }
+
+  dinoBtn.addEventListener("click", openChat);
+  closeChatBtn.addEventListener("click", closeChat);
+
+  // ===== Thai date/time =====
+  const TH_MONTHS = [
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
+  ];
+
+  function thaiDateFromKey(dateKey) {
+    const [y, m, d] = String(dateKey)
+      .split("-")
+      .map((n) => parseInt(n, 10));
+    if (!y || !m || !d) return dateKey;
+    return `${d} ${TH_MONTHS[m - 1]} ${y + 543}`;
+  }
+
+  let lastDateKey = null;
+
+  function renderHistoryDates() {
+    let lastText = null;
+    document.querySelectorAll(".date-sep[data-datekey]").forEach((el) => {
+      const key = el.getAttribute("data-datekey");
+      const text = thaiDateFromKey(key);
+      if (text === lastText) {
+        el.remove();
+        return;
+      }
+      lastText = text;
+
+      el.className = "date-line";
+      el.innerHTML = `
+        <span style="flex:1;height:1px;background:linear-gradient(to right, transparent, #e2e8f0, transparent)"></span>
+        <span style="font-weight:600;color:#64748b">${text}</span>
+        <span style="flex:1;height:1px;background:linear-gradient(to left, transparent, #e2e8f0, transparent)"></span>
+      `;
+    });
+  }
+
+  function renderHistoryTimes() {
+    document.querySelectorAll(".time-tag[data-time]").forEach((el) => {
+      const t = el.getAttribute("data-time") || "";
+      el.textContent = t ? ` ${t}` : "";
+      el.style.opacity = ".7";
+      el.style.fontSize = "10px";
+      el.style.marginLeft = "6px";
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderHistoryDates();
+    renderHistoryTimes();
+
+    const seps = document.querySelectorAll(".date-sep[data-datekey]");
+    const lastSep = seps.length ? seps[seps.length - 1] : null;
+
+    if (lastSep) {
+      lastDateKey = lastSep.getAttribute("data-datekey");
+    }
+  });
+
+  function thaiNow() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    return { dateKey: `${y}-${m}-${day}`, time: `${hh}:${mm}` };
+  }
+
+  function ensureDateSep(dateKey) {
+    if (dateKey !== lastDateKey) {
+      lastDateKey = dateKey;
+
+      const dateText = thaiDateFromKey(dateKey);
+      const sep = document.createElement("div");
+      sep.className = "date-line";
+      sep.innerHTML = `
+        <span style="flex:1;height:1px;background:linear-gradient(to right, transparent, #e2e8f0, transparent)"></span>
+        <span style="font-weight:600;color:#64748b">${dateText}</span>
+        <span style="flex:1;height:1px;background:linear-gradient(to left, transparent, #e2e8f0, transparent)"></span>
+      `;
+      body.appendChild(sep);
+    }
+  }
+
+  // ===== Append message =====
+  function add(role, text) {
+    const empty = document.getElementById("emptyState");
+    if (empty) empty.remove();
+
+    const { dateKey, time } = thaiNow();
+    ensureDateSep(dateKey);
+
+    const row = document.createElement("div");
+    row.className = "msg " + (role === "user" ? "user" : "bot");
+
+    if (role !== "user") {
+      const avatar = document.createElement("img");
+      avatar.className = "avatar";
+      avatar.src = "{% static 'images/bot.png' %}";
+      avatar.alt = "bot";
+      row.appendChild(avatar);
+    }
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+
+    const tag = document.createElement("div");
+    tag.className = "role-tag";
+    tag.innerHTML = `${
+      role === "user" ? "คุณ" : "เจ้าหน้าที่อัตโนมัติ"
+    } <span style="opacity:.7;font-size:10px;margin-left:6px">${time}</span>`;
+
+    const content = document.createElement("div");
+    content.innerHTML = String(text || "").replace(/\n/g, "<br>");
+
+    bubble.appendChild(tag);
+    bubble.appendChild(content);
+    row.appendChild(bubble);
+    body.appendChild(row);
+
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function addLoading() {
+    const row = document.createElement("div");
+    row.className = "msg bot";
+    row.id = "loadingRow";
+    row.innerHTML = `
+      <img class="avatar" src="{% static 'images/bot.png' %}" />
+      <div class="bubble">
+        <div class="role-tag">เจ้าหน้าที่อัตโนมัติ <span style="opacity:.7;font-size:10px;margin-left:6px">${
+          thaiNow().time
+        }</span></div>
+        <em>กำลังพิมพ์...</em>
+      </div>
+    `;
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function removeLoading() {
+    const row = document.getElementById("loadingRow");
+    if (row) row.remove();
+  }
+
+  // ===== Submit =====
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const t = (input.value || "").trim();
+    if (!t) return;
+
+    input.value = "";
+    input.style.height = "auto";
+    add("user", t);
+    addLoading();
+
+    try {
+      const res = await fetch("{% url 'chatbot_api' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ message: t }),
+      });
+
+      const data = await res.json();
+      removeLoading();
+      add(
+        "bot",
+        data.ok
+          ? data.reply
+          : "เกิดข้อผิดพลาด: " + (data.error || "ไม่ทราบสาเหตุ"),
+      );
+    } catch (err) {
+      removeLoading();
+      add("bot", "เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+    }
+  });
+
+  // auto-resize textarea
+  input.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 120) + "px";
+  });
+
+  // Quick reply click
+  document.querySelectorAll("#quickReplies button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const text = btn.getAttribute("data-text");
+      sendQuickMessage(text);
+    });
+  });
+
+  async function sendQuickMessage(text) {
+    add("user", text);
+    addLoading();
+
+    try {
+      const res = await fetch("{% url 'chatbot_api' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken,
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ message: text }),
+      });
+
+      const data = await res.json();
+      removeLoading();
+      add(
+        "bot",
+        data.ok
+          ? data.reply
+          : "เกิดข้อผิดพลาด: " + (data.error || "ไม่ทราบสาเหตุ"),
+      );
+    } catch (err) {
+      removeLoading();
+      add("bot", "เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ");
+    }
+  }
+</script>

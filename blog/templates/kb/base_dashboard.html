@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Admin{% endblock %}</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f6f8;
+    }
+
+    /* Layout */
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: #0b1c2d;
+      color: #fff;
+      padding: 20px 0;
+    }
+
+    .sidebar h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 30px;
+    }
+
+    .menu a {
+      display: block;
+      padding: 12px 24px;
+      color: #cfd8dc;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: #1f3a5f;
+      color: #fff;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: 60px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+    }
+
+    /* Content */
+    .content {
+      padding: 30px;
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h1>Admin</h1>
+    <nav class="menu">
+      <a href="{% url 'dashboard' %}" class="{% block nav_dashboard %}{% endblock %}"> Dashboard</a>
+      <a href="{% url 'kb_list' %}" class="{% block nav_kb %}{% endblock %}"> Knowledge Base</a>
+      <a href="#">👤 Users</a>
+      <a href="#">⚙ Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div>Welcome</div>
+      <div>Admin</div>
+    </div>
+
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
