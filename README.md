@@ -14,7 +14,7 @@ A web-based chatbot application for CMSA Center that automatically answers quest
 - Accessible via web browser
 
 ### DEMO
-- ![](https://github.com/nassoreen/chatbot/blob/main/images/demo.png)
+ ![](https://github.com/nassoreen/chatbot/blob/main/images/demo.png)
 
 ### HOW TO USE
 1. Compile project with Visual Studio
