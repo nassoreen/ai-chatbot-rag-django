@@ -35,10 +35,10 @@ An AI-powered chatbot system using Retrieval-Augmented Generation (RAG) to provi
 1. Clone Repository
 
 ```sh
-git clone https://github.com/nassoreen/chatbot.git
+git clone https://github.com/nassoreen/ai-chatbot-rag-django.git
 ```
 ```sh
-cd chatbot
+cd ai-chatbot-rag-django
 ```
 
 
