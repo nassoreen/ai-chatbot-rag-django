@@ -1,17 +1,25 @@
 
-<h1 align="center">CMSA Chatbot</h1>
-CMSA Chatbot
+<h1 align="center">AI Chatbot with RAG (Django + Ollama)</h1>
 
-A web-based chatbot application for CMSA Center that automatically answers questions using AI and searches for answers from the center's knowledge base
+An AI-powered chatbot system using Retrieval-Augmented Generation (RAG) to provide accurate answers based on an organization’s knowledge base. This approach improves reliability and reduces hallucinations from AI models.
 
 
 
 ### Features
-- Chat interface for asking questions with AI-powered automatic responses
-- Answer retrieval from the center's knowledge base
-- Admin panel for managing Q&A data
-- Conversation history logging
-- Accessible via web browser
+- Automatic AI chatbot for answering questions
+- Knowledge retrieval using vector similarity search
+- LLM integration via Ollama
+- Admin panel for managing knowledge base
+- Chat history tracking
+- Supports contextual and continuous conversations
+
+
+### Tech Stack
+- Backend: Django
+- Database: PostgreSQL
+- AI Model: Ollama (LLM)
+- Embedding: SentenceTransformers
+- Search: Vector Similarity Search
 
 ### DEMO
  ![](https://github.com/nassoreen/chatbot/blob/main/images/demo.png)
